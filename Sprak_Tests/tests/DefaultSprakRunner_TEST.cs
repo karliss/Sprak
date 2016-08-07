@@ -2091,6 +2091,77 @@ print(b3)
 			Assert.AreEqual("true", sprakRunner.Output[1]);
 			Assert.AreEqual("false", sprakRunner.Output[2]);
 		}
+
+		[Test ()]
+		public void ConvertBool ()
+		{
+			StringReader programString = new StringReader(
+		@"
+bool a
+a = true
+print(a)
+a = false
+print(a)
+a = 1
+print(a)
+a = 0
+print(a)
+");
+
+			DefaultSprakRunner sprakRunner = new DefaultSprakRunner(programString);
+			sprakRunner.run(100);
+
+			Assert.AreEqual(0, sprakRunner.getCompileTimeErrorHandler().getErrors().Count);
+			Assert.AreEqual(0, sprakRunner.getRuntimeErrorHandler().getErrors().Count);
+
+			Assert.AreEqual(4, sprakRunner.Output.Count);
+			Assert.AreEqual("true", sprakRunner.Output[0]);
+			Assert.AreEqual("false", sprakRunner.Output[1]);
+			Assert.AreEqual("true", sprakRunner.Output[2]);
+			Assert.AreEqual("false", sprakRunner.Output[3]);
+		}
+
+		[Test()]
+		public void ConvertNumber ()
+		{
+			var cases = new[]{
+				new { value="1", result="1"},
+				new { value="\"1.5\"", result="1.5"},
+				new { value="\"abc\"", result=""},
+				new { value="[]", result=""},
+				new { value="(from 0 to 1)", result=""},
+			};
+
+			foreach (var testCase in cases) {
+				string programText = String.Format ("number a = {0}\nprint(a)\n", testCase.value);
+				DefaultSprakRunner program = new DefaultSprakRunner(new StringReader (programText));
+				program.run();
+				Assert.AreEqual(0, program.getCompileTimeErrorHandler().getErrors().Count);
+				if (testCase.result == "") {
+					Assert.AreEqual(1, program.getRuntimeErrorHandler().getErrors().Count);
+					Assert.AreEqual(0, program.Output.Count);
+				} else {
+					Assert.AreEqual(0, program.getRuntimeErrorHandler().getErrors().Count);
+					Assert.AreEqual(1, program.Output.Count);
+					Assert.AreEqual(testCase.result, program.Output [0]);
+				}
+			}
+		}
+
+		[Test()]
+		public void ConvertStringToArray ()
+		{
+			StringReader programString = new StringReader(
+				"array a = \"abc\"\nprint(a)");
+			DefaultSprakRunner sprakRunner = new DefaultSprakRunner(programString);
+			sprakRunner.run();
+
+			Assert.AreEqual(0, sprakRunner.getCompileTimeErrorHandler().getErrors().Count);
+			Assert.AreEqual(0, sprakRunner.getRuntimeErrorHandler().getErrors().Count);
+
+			Assert.AreEqual(1, sprakRunner.Output.Count);
+			Assert.AreEqual("[a, b, c]", sprakRunner.Output[0]);
+		}
 	}
 		
 }

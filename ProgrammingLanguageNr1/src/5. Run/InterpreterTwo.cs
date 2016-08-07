@@ -407,7 +407,7 @@ namespace ProgrammingLanguageNr1
 				throw new Error ("Can't use value " + r + " of type " + ReturnValueConversions.PrettyObjectType (r.GetType()) + " in if-statement", Error.ErrorType.RUNTIME, token.LineNr, token.LinePosition);
 			}
 
-			if (ConvertToBool(r))
+			if (ReturnValueConversions.ConvertToBool(r))
             {
                 subNode = ifnode.getChild(1);
             }
@@ -523,38 +523,6 @@ namespace ProgrammingLanguageNr1
 //			}
         }
 
-		private float ConvertToNumber(object o) {
-			if(o.GetType() == typeof(float)) {
-				return (float)o;
-			}
-			else if(o.GetType() == typeof(int)) {
-				return (float)(int)o;
-			}
-			else if(o.GetType() == typeof(string)) {
-				float f = 0f;
-				if(float.TryParse((string)o, out f)) {
-					return f;
-				}
-			}
-
-			throw new Error("Can't convert value " + o + " of type " + ReturnValueConversions.PrettyObjectType(o.GetType()) + " to number");
-		}
-
-		private bool ConvertToBool(object o) {
-			//Console.WriteLine("Converting " + o + " of type " + o.GetType() + " to bool");
-			if(o.GetType() == typeof(bool)) {
-				//Console.WriteLine(o + " is bool: " + (bool)o);
-				return (bool)o;
-			}
-			else if(o.GetType() == typeof(float)) {
-				return ((float)o == 0f ? false : true);
-			}
-			else if(o.GetType() == typeof(int)) {
-				return ((int)o == 0 ? false : true);
-			}
-			throw new Error("Can't convert value " + o + " of type " + ReturnValueConversions.PrettyObjectType(o.GetType()) + " to bool");
-		}
-
         private void Operator()
         {
             object result;
@@ -567,53 +535,53 @@ namespace ProgrammingLanguageNr1
                     break;
 
                 case "-":
-					rhs = ConvertToNumber(PopValue());
-                    lhs = ConvertToNumber(PopValue());
+					rhs = ReturnValueConversions.ConvertToNumber(PopValue());
+                    lhs = ReturnValueConversions.ConvertToNumber(PopValue());
                     result = lhs - rhs;
                     break;
 
                 case "*":
-                    result = ConvertToNumber(PopValue()) * ConvertToNumber(PopValue());
+                    result = ReturnValueConversions.ConvertToNumber(PopValue()) * ReturnValueConversions.ConvertToNumber(PopValue());
                     break;
 
                 case "/":
-                    rhs = ConvertToNumber(PopValue());
-                    lhs = ConvertToNumber(PopValue());
+                    rhs = ReturnValueConversions.ConvertToNumber(PopValue());
+                    lhs = ReturnValueConversions.ConvertToNumber(PopValue());
                     result = lhs / rhs;
                     break;
                 case "<":
-                    rhs = ConvertToNumber(PopValue());
-                    lhs = ConvertToNumber(PopValue());
+                    rhs = ReturnValueConversions.ConvertToNumber(PopValue());
+                    lhs = ReturnValueConversions.ConvertToNumber(PopValue());
                     result = lhs < rhs;
                     break;
                 case ">":
-                    rhs = ConvertToNumber(PopValue());
-                    lhs = ConvertToNumber(PopValue());
+                    rhs = ReturnValueConversions.ConvertToNumber(PopValue());
+                    lhs = ReturnValueConversions.ConvertToNumber(PopValue());
                     result = lhs > rhs;
                     break;
 				case ">=":
-                    rhs = ConvertToNumber(PopValue());
-                    lhs = ConvertToNumber(PopValue());
+                    rhs = ReturnValueConversions.ConvertToNumber(PopValue());
+                    lhs = ReturnValueConversions.ConvertToNumber(PopValue());
                     result = lhs >= rhs;
                     break;
 				case "<=":
-                    rhs = ConvertToNumber(PopValue());
-                    lhs = ConvertToNumber(PopValue());
+                    rhs = ReturnValueConversions.ConvertToNumber(PopValue());
+                    lhs = ReturnValueConversions.ConvertToNumber(PopValue());
                     result = lhs <= rhs;
                     break;
 				case "==":
                     result = equalityTest();
                     break;
 				case "!=":
-					result = !ConvertToBool(equalityTest());
+					result = !ReturnValueConversions.ConvertToBool(equalityTest());
                     break;
                 case "&&":
 
 				object a = PopValue();
-				bool a_bool = ConvertToBool(a);
+				bool a_bool = ReturnValueConversions.ConvertToBool(a);
 				//Console.WriteLine(a + " is of type " + a.GetType() + " , converted " + a_bool + " is of type " + a_bool.GetType());
 				object b = PopValue();
-				bool b_bool = ConvertToBool(b);
+				bool b_bool = ReturnValueConversions.ConvertToBool(b);
 				result = a_bool && b_bool;
 //				Console.WriteLine(string.Format("using &&, a = {0}, b = {1}, a_bool = {2}, b_bool = {3}, result = {4}", a, b, a_bool, b_bool, result));
 
@@ -622,10 +590,10 @@ namespace ProgrammingLanguageNr1
 				case "||":
 
 				object a2 = PopValue();
-				bool a2_bool = ConvertToBool(a2);
+				bool a2_bool = ReturnValueConversions.ConvertToBool(a2);
 				//Console.WriteLine(a + " is of type " + a.GetType() + " , converted " + a_bool + " is of type " + a_bool.GetType());
 				object b2 = PopValue();
-				bool b2_bool = ConvertToBool(b2);
+				bool b2_bool = ReturnValueConversions.ConvertToBool(b2);
 				result = a2_bool || b2_bool;
 //				Console.WriteLine(string.Format("using ||, a2 = {0}, b2 = {1}, a2_bool = {2}, b2_bool = {3}, result = {4}", a2, b2, a2_bool, b2_bool, result));
 
@@ -713,7 +681,7 @@ namespace ProgrammingLanguageNr1
 
 		private void Not() {
 			object a = PopValue();
-			bool a_bool = ConvertToBool(a);
+			bool a_bool = ReturnValueConversions.ConvertToBool(a);
 			PushValue(!a_bool);
 		}
 		
